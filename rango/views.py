@@ -2,10 +2,20 @@ from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 #from django.shortcuts import HttpResponse
 from django.shortcuts import render
 from rango.models import Category, Page
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 
 # Create your views here.
+
+@login_required
+def user_logout(request):
+  logout(request)
+  return HttpResponseRedirect('/rango/')
+
+@login_required
+def restricted(request):
+  return HttpResponse("Since you're logged in, you can see this text.")
 
 def user_login(request):
   if request.method == 'POST':
@@ -83,6 +93,7 @@ def add_page(request, category_name_slug):
   context_dict = {'form':form, 'category': cat, 'category_name_slug':category_name_slug}
   return render(request, 'rango/add_page.html', context_dict)
 
+@login_required
 def add_category(request):
   if request.method == 'POST':
     form = CategoryForm(request.POST)
